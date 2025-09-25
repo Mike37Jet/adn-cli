@@ -15,9 +15,9 @@ from ..utils import FileHandler, TemplateEngine, get_logger, validate_pdf_file
 console = Console()
 logger = get_logger(__name__)
 
-# Sub-aplicación para comandos 'create'
+# Sub-aplicación para comandos 'gen-md-from-pdf'
 create_router = typer.Typer(
-    help="Comandos para crear archivos de extracción",
+    help="Genera archivos Markdown a partir de PDFs para extracción de información",
     rich_markup_mode="rich"
 )
 
@@ -35,7 +35,7 @@ def create_file(
         False, "--force", "-f", help="Sobrescribir archivo existente"
     ),
 ) -> None:
-    """Crear archivo de extracción para un PDF específico."""
+    """Generar archivo Markdown de extracción para un PDF específico."""
     
     # Validar archivo PDF
     if not validate_pdf_file(pdf_file):
@@ -96,7 +96,7 @@ def create_all(
         True, "--skip-processed", help="Omitir archivos ya procesados"
     ),
 ) -> None:
-    """Crear archivos de extracción para todos los PDFs en un directorio."""
+    """Generar archivos Markdown de extracción para todos los PDFs en un directorio."""
     
     target_dir = directory or Path.cwd()
     
@@ -177,7 +177,7 @@ def create_glob(
     ),
     force: bool = typer.Option(False, "--force", "-f", help="Sobrescribir archivos existentes"),
 ) -> None:
-    """Crear archivos de extracción usando patrones glob."""
+    """Generar archivos Markdown de extracción usando patrones glob."""
     
     # Buscar archivos usando glob
     pdf_files = [Path(f) for f in glob.glob(pattern) if f.lower().endswith('.pdf')]
@@ -239,9 +239,9 @@ def create_default(
     force: bool = typer.Option(False, "--force", "-f", help="Sobrescribir archivos existentes"),
 ) -> None:
     """
-    Crear archivos de extracción para PDFs.
+    Generar archivos Markdown de extracción para PDFs.
     
-    Si no se especifica ningún comando, se comporta como 'create file' o 'create all'.
+    Si no se especifica ningún comando, se comporta como 'gen-md-from-pdf file' o 'gen-md-from-pdf all'.
     """
     
     # Si se invocó un subcomando, no hacer nada

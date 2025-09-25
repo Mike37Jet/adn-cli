@@ -26,7 +26,16 @@ class ConfigManager:
         
         self.config_dir = base_dir
         self.config_file = self.config_dir / "config.yaml"
-        self.templates_dir = self.config_dir / "templates"
+        
+        # Usar templates del proyecto por defecto, fallback a directorio de usuario
+        project_templates = Path(__file__).parent.parent / "templates"
+        user_templates = self.config_dir / "templates"
+        
+        # Priorizar templates del proyecto si existe, sino usar directorio de usuario
+        if project_templates.exists():
+            self.templates_dir = project_templates
+        else:
+            self.templates_dir = user_templates
         
         # Configuración por defecto
         self._default_config = {

@@ -14,7 +14,7 @@ from rich.console import Console
 from rich.table import Table
 
 from . import __version__
-from .commands import config_router, create_router
+from .commands import config_router, create_router, csv_to_md_router
 from .utils import get_logger, setup_logging
 
 # Configuración global
@@ -31,8 +31,9 @@ app = typer.Typer(
 )
 
 # Agregar sub-comandos
-app.add_typer(create_router, name="create", help="Crear archivos de extracción")
+app.add_typer(create_router, name="gen-md-from-pdf", help="Genera un archivo Markdown a partir de un PDF para extracción de información")
 app.add_typer(config_router, name="config", help="Gestionar configuración")
+app.add_typer(csv_to_md_router, name="csv-to-md", help="Convertir CSV a archivos Markdown")
 
 
 @app.command()
@@ -185,21 +186,31 @@ def main(
     ADN CLI - Automatización de Documentos y Notas
     
     Framework CLI profesional para automatizar la creación de documentos de 
-    extracción y notas estructuradas a partir de archivos PDF.
+    extracción y notas estructuradas a partir de archivos PDF y conversión
+    de archivos CSV a documentos Markdown.
     
     Ejemplos de uso:
     
-        # Crear archivo de extracción para un PDF
-        adn create documento.pdf
+        # Generar archivo Markdown para un PDF
+        adn gen-md-from-pdf documento.pdf
         
-        # Crear archivo en directorio específico
-        adn create documento.pdf --output-dir /ruta/destino
+        # Generar archivo en directorio específico
+        adn gen-md-from-pdf documento.pdf --output-dir /ruta/destino
         
         # Procesar todos los PDFs del directorio
-        adn create --all
+        adn gen-md-from-pdf --all
         
         # Procesar todos los PDFs y guardar en directorio específico
-        adn create --all --output-dir /ruta/destino
+        adn gen-md-from-pdf --all --output-dir /ruta/destino
+        
+        # Convertir CSV a archivos Markdown
+        adn csv-to-md convert datos.csv
+        
+        # Convertir CSV y guardar en directorio específico
+        adn csv-to-md convert datos.csv --output-dir /ruta/destino
+        
+        # Validar archivo CSV antes de procesar
+        adn csv-to-md validate datos.csv
         
         # Configurar ADN CLI
         adn config --init

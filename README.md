@@ -1,6 +1,6 @@
 # ADN CLI - Automatización de Documentos y Notas
 
-**ADN CLI** es un framework CLI profesional para automatizar la creación de documentos de extracción y notas estructuradas a partir de archivos PDF.
+**ADN CLI** es un framework CLI profesional para automatizar la creación de documentos de extracción y notas estructuradas a partir de archivos PDF, así como la conversión de archivos CSV a documentos Markdown individuales con metadatos estructurados.
 
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,12 +10,14 @@
 ## Características principales
 
 - **Procesamiento automático de PDFs**: Genera archivos de extracción con metadatos estructurados
+- **Conversión CSV a Markdown**: Transforma archivos CSV en documentos Markdown individuales con YAML front-matter
 - **Gestión inteligente de directorios**: Crea automáticamente carpetas de salida y estructura de directorios
 - **Sistema de templates flexible**: Personaliza el formato de salida usando Jinja2
 - **Configuración cross-platform**: Funciona en Windows, macOS y Linux
 - **CLI intuitiva**: Interfaz de línea de comandos rica con colores y ayuda detallada
-- **Procesamiento por lotes**: Procesa múltiples PDFs simultáneamente con opciones de directorio personalizadas
+- **Procesamiento por lotes**: Procesa múltiples archivos simultáneamente con opciones de directorio personalizadas
 - **Validación robusta**: Sistema completo de validación y manejo de errores
+- **Encoding automático**: Detecta automáticamente diferentes codificaciones de archivos
 - **Logging profesional**: Sistema de logs con rotación automática
 - **Extensible**: Arquitectura modular y personalizable
 
@@ -79,6 +81,19 @@ adn create --all --output-dir C:\mis_extracciones
 adn create documento.pdf --output-dir ./resultados
 ```
 
+### 5. Convertir CSV a archivos Markdown
+
+```bash
+# Convertir archivo CSV a archivos .md numerados
+adn csv-to-md convert datos.csv
+
+# Especificar directorio de salida
+adn csv-to-md convert datos.csv --output-dir ./markdown_files
+
+# Validar CSV antes de procesar
+adn csv-to-md validate datos.csv
+```
+
 ---
 
 ## Uso
@@ -138,6 +153,25 @@ adn config template --name academico
 
 # Ver información del sistema
 adn config path
+```
+
+#### Conversión CSV a Markdown
+
+```bash
+# Convertir CSV a archivos Markdown individuales
+adn csv-to-md convert datos.csv
+
+# Especificar directorio de salida
+adn csv-to-md convert datos.csv --output-dir ./documentos
+
+# Iniciar numeración desde un número específico
+adn csv-to-md convert datos.csv --start-number 10
+
+# Forzar sobrescritura de archivos existentes
+adn csv-to-md convert datos.csv --force
+
+# Validar estructura del CSV antes de procesar
+adn csv-to-md validate datos.csv
 ```
 
 #### Utilidades
@@ -366,6 +400,156 @@ adn create --all --output-dir "C:\notas\$(Get-Date -Format 'yyyy-MM')"
 
 # Procesar libros y documentos de estudio
 adn create --all --output-dir C:\estudio\extracciones --template academico
+```
+
+---
+
+## Conversión CSV a Markdown
+
+ADN CLI incluye una funcionalidad completa para convertir archivos CSV a archivos Markdown individuales con metadatos estructurados.
+
+### Formato de CSV requerido
+
+El archivo CSV debe contener las siguientes columnas obligatorias:
+
+```csv
+source,doi,title,abstract
+"Journal of Computer Science","10.1234/jcs.2023.001","Machine Learning Applications","Este artículo explora..."
+"IEEE Transactions","10.1109/tai.2023.002","Neural Networks for NLP","Una revisión comprehensive..."
+```
+
+**Columnas requeridas:**
+- `source`: Fuente de la información
+- `doi`: Identificador único del documento
+- `title`: Título del artículo/documento
+- `abstract`: Resumen del contenido
+
+### Formato de salida
+
+Cada registro del CSV genera un archivo `.md` con numeración secuencial (`001.md`, `002.md`, etc.) y el siguiente formato:
+
+```yaml
+---
+source: Journal of Computer Science
+doi: 10.1234/jcs.2023.001
+title: Machine Learning Applications in Healthcare
+abstract: Este artículo explora las aplicaciones del aprendizaje automático...
+estado:
+  - procesado
+tags:
+  - documento
+  - investigacion
+---
+```
+
+### Comandos disponibles
+
+#### Validar archivo CSV
+
+```bash
+# Verificar que el CSV tenga las columnas requeridas
+adn csv-to-md validate datos.csv
+
+# Ejemplo de salida:
+# ✓ Archivo CSV válido
+# Archivo: datos.csv
+# Columnas encontradas: abstract, doi, source, title
+# Número de registros: 25
+```
+
+#### Convertir CSV a Markdown
+
+```bash
+# Conversión básica (usa directorio actual)
+adn csv-to-md convert papers.csv
+
+# Especificar directorio de salida
+adn csv-to-md convert papers.csv --output-dir ./markdown_docs
+
+# Iniciar numeración desde número específico
+adn csv-to-md convert papers.csv --start-number 50
+
+# Forzar sobrescritura de archivos existentes
+adn csv-to-md convert papers.csv --force
+
+# Combinando opciones
+adn csv-to-md convert papers.csv --output-dir ./docs --start-number 1 --force
+```
+
+### Opciones del comando convert
+
+| Opción | Alias | Descripción | Por defecto |
+|--------|-------|-------------|-------------|
+| `--output-dir` | `-o` | Directorio de salida para archivos Markdown | Directorio actual |
+| `--start-number` | `-s` | Número inicial para la nomenclatura de archivos | 1 |
+| `--force` | `-f` | Sobrescribir archivos existentes | No |
+
+### Manejo de datos faltantes
+
+El sistema maneja correctamente los datos faltantes:
+
+```csv
+source,doi,title,abstract
+"Complete Journal","10.1234/complete","Complete Article","Full abstract here"
+"Missing DOI Journal",,"Article Without DOI","Abstract without DOI"
+,,"Missing Everything",
+```
+
+Los campos vacíos aparecen como valores vacíos en el YAML front-matter:
+
+```yaml
+---
+source: Missing DOI Journal
+doi: 
+title: Article Without DOI
+abstract: Abstract without DOI
+estado:
+  - procesado
+tags:
+  - documento
+  - investigacion
+---
+```
+
+### Características técnicas
+
+- **Encoding automático**: Detecta automáticamente UTF-8, Latin-1, CP1252
+- **Validación robusta**: Verifica columnas requeridas antes de procesar
+- **Manejo de errores**: Mensajes claros para archivos inválidos o faltantes
+- **Nomenclatura secuencial**: Archivos numerados con formato de 3 dígitos
+- **Progreso visual**: Barra de progreso durante el procesamiento
+- **Compatibilidad**: Funciona con diferentes formatos de CSV
+
+### Casos de uso
+
+#### Biblioteca de investigación
+
+```bash
+# Procesar base de datos de papers académicos
+adn csv-to-md convert academic_papers.csv --output-dir ./biblioteca
+
+# Resultado: 001.md, 002.md, 003.md...
+# Cada archivo contiene metadatos estructurados listos para gestores de referencias
+```
+
+#### Documentación corporativa
+
+```bash
+# Convertir catálogo de documentos corporativos  
+adn csv-to-md convert documentos_empresa.csv --output-dir ./docs_empresa --start-number 100
+
+# Resultado: 100.md, 101.md, 102.md...
+# Metadatos listos para sistemas de gestión documental
+```
+
+#### Gestión de conocimiento
+
+```bash
+# Procesar base de conocimiento en lotes
+adn csv-to-md convert kb_articles.csv --output-dir ./knowledge_base
+
+# Validar antes de procesar archivos grandes
+adn csv-to-md validate large_dataset.csv
 ```
 
 ---

@@ -60,6 +60,7 @@ class TemplateEngine:
         try:
             # Cargar template
             template_file = f"{template_name}.md"
+            logger.debug(f"Cargando template: {template_file} desde {self.templates_dir}")
             template = self.env.get_template(template_file)
             
             # Preparar contexto de variables
@@ -169,6 +170,8 @@ class TemplateEngine:
             content = self._get_default_template_content()
             default_template.write_text(content, encoding='utf-8')
             logger.info("Template por defecto creado")
+        else:
+            logger.debug(f"Template por defecto ya existe: {default_template}")
     
     def _get_default_template_content(self) -> str:
         """
