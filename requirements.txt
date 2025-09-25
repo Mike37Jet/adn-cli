@@ -1,0 +1,16 @@
+# Dependencias principales
+typer[all]>=0.9.0
+rich>=13.0.0
+jinja2>=3.1.0
+pyyaml>=6.0
+click>=8.0.0
+
+# Dependencias de desarrollo (opcional)
+# Descomenta para desarrollo local
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+# black>=23.0.0
+# isort>=5.12.0
+# flake8>=6.0.0
+# mypy>=1.0.0
+# pre-commit>=3.0.0
