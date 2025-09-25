@@ -192,8 +192,14 @@ def main(
         # Crear archivo de extracción para un PDF
         adn create documento.pdf
         
+        # Crear archivo en directorio específico
+        adn create documento.pdf --output-dir /ruta/destino
+        
         # Procesar todos los PDFs del directorio
         adn create --all
+        
+        # Procesar todos los PDFs y guardar en directorio específico
+        adn create --all --output-dir /ruta/destino
         
         # Configurar ADN CLI
         adn config --init
