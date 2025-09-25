@@ -10,10 +10,11 @@
 ## Características principales
 
 - **Procesamiento automático de PDFs**: Genera archivos de extracción con metadatos estructurados
+- **Gestión inteligente de directorios**: Crea automáticamente carpetas de salida y estructura de directorios
 - **Sistema de templates flexible**: Personaliza el formato de salida usando Jinja2
 - **Configuración cross-platform**: Funciona en Windows, macOS y Linux
 - **CLI intuitiva**: Interfaz de línea de comandos rica con colores y ayuda detallada
-- **Procesamiento por lotes**: Procesa múltiples PDFs simultáneamente
+- **Procesamiento por lotes**: Procesa múltiples PDFs simultáneamente con opciones de directorio personalizadas
 - **Validación robusta**: Sistema completo de validación y manejo de errores
 - **Logging profesional**: Sistema de logs con rotación automática
 - **Extensible**: Arquitectura modular y personalizable
@@ -70,6 +71,14 @@ adn create archivo.pdf
 adn create --all
 ```
 
+### 4. Especificar directorio de salida
+
+```bash
+# El CLI crea automáticamente la carpeta si no existe
+adn create --all --output-dir C:\mis_extracciones
+adn create documento.pdf --output-dir ./resultados
+```
+
 ---
 
 ## Uso
@@ -82,14 +91,27 @@ adn create --all
 # Archivo individual
 adn create documento.pdf
 
+# Archivo individual con directorio de salida personalizado
+adn create documento.pdf --output-dir C:\mis_documentos
+
 # Todos los PDFs del directorio actual
 adn create --all
+
+# Todos los PDFs con directorio de salida específico (crea la carpeta automáticamente)
+adn create --all --output-dir C:\extracciones
 
 # Con opciones personalizadas
 adn create documento.pdf --template custom --output-dir ./extracciones
 
+# Forzar sobrescritura de archivos existentes
+adn create --all --output-dir C:\resultados --force
+
 # Usando patrones glob
-adn create glob "*.pdf" --template academico
+adn create glob "*.pdf" --template academico --output-dir ./salida
+
+# Usando subcomandos específicos
+adn create file documento.pdf --output-dir C:\archivos
+adn create all --output-dir C:\todos_los_pdfs
 ```
 
 #### Gestión de configuración
@@ -138,14 +160,69 @@ adn version
 
 ```bash
 # Activar logging detallado
-adn --verbose comando
+adn --verbose create --all
 
 # Suprimir salida no esencial
-adn --quiet comando
+adn --quiet create documento.pdf
 
 # Ver ayuda
 adn --help
-adn comando --help
+adn create --help
+adn config --help
+
+# Ver versión
+adn --version
+```
+
+### Opciones comunes del comando create
+
+| Opción | Alias | Descripción |
+|--------|-------|-------------|
+| `--output-dir` | `-o` | Directorio donde guardar archivos (se crea automáticamente) |
+| `--template` | `-t` | Template personalizado a usar |
+| `--force` | `-f` | Sobrescribir archivos existentes |
+| `--all` | | Procesar todos los PDFs del directorio |
+| `--pattern` | `-p` | Patrón de archivos (por defecto: `*.pdf`) |
+| `--skip-processed` | | Omitir archivos ya procesados (por defecto: true) |
+
+---
+
+## Gestión de directorios de salida
+
+### Creación automática de carpetas
+
+ADN CLI **crea automáticamente** los directorios de salida si no existen:
+
+```bash
+# Crea C:\documentos si no existe
+adn create --all --output-dir C:\documentos
+
+# Crea toda la estructura de carpetas padre
+adn create documento.pdf --output-dir C:\proyectos\2025\analisis\resultados
+
+# Funciona con rutas relativas
+adn create --all --output-dir ./extracciones/febrero
+```
+
+### Comportamiento por defecto
+
+- **Sin `--output-dir`**: Los archivos se guardan junto al PDF original
+- **Con `--output-dir`**: Se usa el directorio especificado (se crea si no existe)
+- **Carpetas padre**: Se crean automáticamente todas las carpetas necesarias
+- **Permisos**: Respeta los permisos del sistema operativo
+
+### Ejemplos prácticos
+
+```bash
+# Organización por fecha
+adn create --all --output-dir "C:\extracciones\2025\enero"
+
+# Separar por tipo de documento
+adn create informes*.pdf --output-dir C:\trabajo\informes
+adn create facturas*.pdf --output-dir C:\trabajo\facturas
+
+# Estructura para proyectos
+adn create --all --output-dir C:\proyectos\cliente-a\documentos
 ```
 
 ---
@@ -259,7 +336,7 @@ adn config set default_template "academico"
 adn config set output_suffix "_analisis"
 
 # Procesar papers de investigación
-adn create --all --template academico
+adn create --all --template academico --output-dir C:\investigacion\analisis
 ```
 
 ### Gestión de documentos corporativos
@@ -270,7 +347,11 @@ adn config set default_template "corporativo"
 adn config set preserve_structure true
 
 # Procesar documentos manteniendo estructura
-adn create glob "**/*.pdf" --output-dir ./procesados
+adn create glob "**/*.pdf" --output-dir C:\empresa\procesados
+
+# Procesar por departamentos
+adn create --all --output-dir C:\empresa\rrhh --template corporativo
+adn create --all --output-dir C:\empresa\finanzas --template financiero
 ```
 
 ### Notas personales
@@ -278,7 +359,13 @@ adn create glob "**/*.pdf" --output-dir ./procesados
 ```bash
 # Template simple para notas
 adn config set output_suffix "_notas"
-adn create documento.pdf --template simple
+adn create documento.pdf --template simple --output-dir C:\mis_notas
+
+# Organizar por fecha
+adn create --all --output-dir "C:\notas\$(Get-Date -Format 'yyyy-MM')"
+
+# Procesar libros y documentos de estudio
+adn create --all --output-dir C:\estudio\extracciones --template academico
 ```
 
 ---
