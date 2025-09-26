@@ -37,6 +37,22 @@ Si tienes problemas con pip o múltiples versiones de Python:
    pip --version
    ```
 
+4. **Configurar PATH para scripts de Python:**
+   - Después de instalar Python desde Microsoft Store, asegúrate de agregar el directorio de scripts al PATH
+   - Ve a **Configuración > Sistema > Acerca de > Configuración avanzada del sistema**
+   - Haz clic en **Variables de entorno**
+   - En **Variables del usuario**, busca **Path** y haz clic en **Editar**
+   - Agrega esta ruta (ajustando según tu usuario y versión de Python):
+   ```
+   C:\Users\[TU_USUARIO]\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.XX_[ID_ALEATORIO]\LocalCache\local-packages\PythonXXX\Scripts
+   ```
+   - **Ejemplo para Python 3.13:**
+   ```
+   C:\Users\migue\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts
+   ```
+   - Haz clic en **Aceptar** para guardar
+   - **Reinicia PowerShell** para que los cambios surtan efecto
+
 ## Métodos Disponibles AHORA
 
 ### Opción 1: Desde código fuente (RECOMENDADO)
@@ -145,6 +161,23 @@ pip list | grep adn
 cd adn-cli
 pip install -e .
 ```
+
+### El comando `adn` está instalado pero no se encuentra (Windows)
+
+Si ves un mensaje como "WARNING: The script adn.exe is installed in '...' which is not on PATH":
+
+```powershell
+# Agregar el directorio de scripts de Python al PATH (sesión actual)
+$env:PATH += ";C:\Users\[TU_USUARIO]\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.XX_[ID_ALEATORIO]\LocalCache\local-packages\PythonXXX\Scripts"
+
+# Ejemplo para Python 3.13:
+$env:PATH += ";C:\Users\migue\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts"
+
+# Verificar que funciona
+adn --version
+```
+
+**Nota:** Reemplaza `[TU_USUARIO]` con tu nombre de usuario, `3.XX` con tu versión de Python (ej: 3.11, 3.12, 3.13), `[ID_ALEATORIO]` con el identificador único que aparece en tu sistema, y `PythonXXX` con el número correspondiente (ej: Python311, Python312, Python313).
 
 ### Errores de permisos
 
