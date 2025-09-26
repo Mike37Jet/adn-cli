@@ -1,44 +1,95 @@
 # Guía de Instalación - ADN CLI
 
-## 🚀 Instalación en otra PC
+## Precondiciones
 
-### Opción 1: Archivo Wheel (Recomendado)
+### Requisito: Python instalado
 
-1. **Copia el archivo** `adn_cli-1.0.0-py3-none-any.whl` desde la carpeta `dist/`
-2. **En la otra PC, ejecuta:**
-   ```bash
-   pip install adn_cli-1.0.0-py3-none-any.whl
-   ```
-3. **Verifica la instalación:**
-   ```bash
-   adn --version
-   ```
+ADN CLI requiere **Python 3.8 o superior**. Antes de instalar, asegúrate de tener Python configurado correctamente.
 
-### Opción 2: Archivo Source
-
-1. **Copia el archivo** `adn_cli-1.0.0.tar.gz` desde la carpeta `dist/`
-2. **En la otra PC, ejecuta:**
-   ```bash
-   pip install adn_cli-1.0.0.tar.gz
-   ```
-
-### Opción 3: Desde repositorio Git
+#### Verificar Python existente
 
 ```bash
-git clone https://github.com/username/adn-cli.git
+# Verificar versión de Python
+python --version
+
+# Verificar que pip funciona
+pip --version
+```
+
+#### Instalación recomendada de Python (Windows)
+
+Si tienes problemas con pip o múltiples versiones de Python:
+
+1. **Desinstalar versiones existentes:**
+   - Ve a **Configuración > Aplicaciones**
+   - Busca "Python" y desinstala todas las versiones
+   - Elimina también cualquier instalación manual
+
+2. **Instalar desde Microsoft Store (RECOMENDADO):**
+   - Abre **Microsoft Store**
+   - Busca "Python 3.11" o la versión más reciente
+   - Instala la versión oficial de Python Software Foundation
+   - Esta instalación incluye pip y se configura automáticamente
+
+3. **Verificar instalación:**
+   ```bash
+   python --version
+   pip --version
+   ```
+
+## Métodos Disponibles AHORA
+
+### Opción 1: Desde código fuente (RECOMENDADO)
+
+**Si ya tienes el proyecto descargado:**
+```bash
+# Entrar al directorio del proyecto
+cd adn-cli
+
+# Instalar en modo desarrollo
+pip install -e .
+
+# Verificar instalación
+adn --version
+```
+
+### Opción 2: Desde repositorio Git
+
+```bash
+# Clonar e instalar directamente
+git clone https://github.com/Mike37Jet/adn-cli.git
 cd adn-cli
 pip install -e .
 ```
 
-### Opción 4: Instalación completa con dependencias de desarrollo
+### Opción 3: Para desarrollo (con herramientas extra)
 
 ```bash
-git clone https://github.com/username/adn-cli.git
+# Si quieres contribuir al proyecto
+git clone https://github.com/Mike37Jet/adn-cli.git
 cd adn-cli
 pip install -e ".[dev]"
 ```
 
-## ✅ Verificación
+## Instalación manual (Si tienes archivos dist/)
+
+### Si generaste archivos de distribución localmente:
+
+**Archivo Wheel:**
+```bash
+# Solo si existe el archivo
+pip install adn_cli-1.0.0-py3-none-any.whl
+```
+
+**Archivo Source:**
+```bash
+# Solo si existe el archivo  
+pip install adn_cli-1.0.0.tar.gz
+```
+
+**Nota:** Estos archivos se generan con `python -m build` o los scripts incluidos
+
+## Verificación
 
 Después de instalar, verifica que funciona:
 
@@ -56,50 +107,50 @@ adn config init
 adn list-files --help
 ```
 
-## 🔄 Actualización
+## Actualización
 
 Para actualizar a una nueva versión:
 
 ```bash
-# Si instalaste desde wheel/tar.gz
-pip install --upgrade adn_cli-[nueva-version]-py3-none-any.whl
-
 # Si instalaste desde código fuente
 cd adn-cli
 git pull
 pip install -e .
+
+# Si instalaste desde wheel/tar.gz local
+pip install --upgrade adn_cli-[nueva-version]-py3-none-any.whl
 ```
 
-## 🗑️ Desinstalación
+## Desinstalación
 
 ```bash
 pip uninstall adn-cli
 ```
 
-## 📋 Requisitos del sistema
+## Requisitos del sistema
 
 - **Python**: 3.8 o superior
 - **Sistema operativo**: Windows, macOS, Linux
 - **Dependencias**: Se instalan automáticamente con pip
 
-## 🐛 Solución de problemas
+## Solución de problemas
 
 ### Comando `adn` no encontrado
 
 ```bash
 # Verifica la instalación
-pip list | grep adn-cli
+pip list | grep adn
 
-# Reinstala si es necesario
-pip uninstall adn-cli
-pip install adn_cli-1.0.0-py3-none-any.whl
+# Si instalaste desde código fuente, reinstala
+cd adn-cli
+pip install -e .
 ```
 
 ### Errores de permisos
 
 ```bash
 # Instalar para el usuario actual solamente
-pip install --user adn_cli-1.0.0-py3-none-any.whl
+pip install --user -e .
 ```
 
 ### Conflictos de dependencias
@@ -107,9 +158,10 @@ pip install --user adn_cli-1.0.0-py3-none-any.whl
 ```bash
 # Crear entorno virtual limpio
 python -m venv adn_env
-source adn_env/bin/activate  # Linux/Mac
-# o
 adn_env\Scripts\activate     # Windows
+# o
+source adn_env/bin/activate  # Linux/Mac
 
-pip install adn_cli-1.0.0-py3-none-any.whl
+# Instalar en el ambiente limpio
+pip install -e .
 ```
