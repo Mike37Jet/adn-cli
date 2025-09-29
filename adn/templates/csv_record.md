@@ -130,37 +130,20 @@ return ['paper', `primera-${s1}`, `segunda-${s2}`];
 ```meta-bind-js-view
 {primera-revisión} as p1
 {segunda-revisión} as p2
-{estado} as est
+save to {estado}
 hidden
 ---
-const norm = v => String(v ?? '').trim().toLowerCase();
-const isApproved   = norm(context.bound.p1) === 'aprobado';
-const secondChosen = ['aprobado','rechazado'].includes(norm(context.bound.p2));
-const enEx         = norm(context.bound.est) === 'en-extracción';
+const n = v => String(v ?? '').trim().toLowerCase();
+const c = v => v==='aprobado' || v==='rechazado';
+const s1 = n(context.bound.p1);
+const s2 = n(context.bound.p2);
 
-function findCallout(type){
-  return document.querySelector('.markdown-preview-view .callout[data-callout="'+type+'"]')
-      || document.querySelector('.cm-s-obsidian .callout[data-callout="'+type+'"]')
-      || document.querySelector('.callout[data-callout="'+type+'"]');
-}
+if (!c(s1) && !c(s2)) return 'obtenido-motor';
+if (s1 === 'rechazado') return 'rechazado-final';
+if (s1 === 'aprobado' && !c(s2)) return 'en-segunda-revision';
+if (s1 === 'aprobado' && c(s2)) return (s2==='aprobado') ? 'aprobado-final' : 'rechazado-final';
+return 'obtenido-motor';
 
-function apply(){
-  const first  = findCallout('primera-wrap');
-  const second = findCallout('segunda-wrap');
-  if (!first || !second) { requestAnimationFrame(apply); return; }
-
-  second.style.display = (isApproved && !enEx) ? '' : 'none';
-  first.style.display = (isApproved && secondChosen) ? 'none' : '';
-
-  const input2 = second.querySelector('select, input, textarea, .mb-input');
-  if (input2) input2.disabled = (!isApproved || enEx);
-
-  const input1 = first.querySelector('select, input, textarea, .mb-input');
-  if (input1) input1.disabled = (isApproved && secondChosen) || enEx;
-}
-
-apply();
-return '';
 ```
 
 ```meta-bind-js-view
@@ -213,6 +196,7 @@ actions:
     evaluate: false
     value: "en-extracción"
 
+
 ```
 
 ```meta-bind-js-view
@@ -220,14 +204,36 @@ actions:
 hidden
 ---
 const norm = v => String(v ?? '').trim().toLowerCase();
-const E = norm(context.bound.est);
-const show = (E === 'aprobado-final'); // y se ocultará si pasas a "en-extracción"
+const allowed = norm(context.bound.est) === 'aprobado-final';
 
-function tick(){
-  const el = document.querySelector('.callout[data-callout="extraccion-wrap"]');
-  if (!el) return requestAnimationFrame(tick);
-  el.style.display = show ? '' : 'none';
+function findCallout(type){
+  return document.querySelector('.markdown-preview-view .callout[data-callout="'+type+'"]')
+      || document.querySelector('.cm-s-obsidian .callout[data-callout="'+type+'"]')
+      || document.querySelector('.callout[data-callout="'+type+'"]');
 }
-tick();
+
+function toggle(){
+  const ex = findCallout('extraccion-wrap');
+  if (!ex) { requestAnimationFrame(toggle); return; }
+
+  // Mostrar/ocultar el callout completo
+  ex.style.display = allowed ? '' : 'none';
+
+  // Mostrar/ocultar el botón (y quitarle el "hidden" duro si existe)
+  const btn = document.querySelector('[data-mb-id="start-extraccion"]') 
+           || document.getElementById('start-extraccion');
+  if (btn) {
+    if (allowed) {
+      btn.removeAttribute('hidden');
+      btn.style.display = '';
+    } else {
+      btn.setAttribute('hidden','true');
+      btn.style.display = 'none';
+    }
+  }
+}
+toggle();
 return '';
+
+
 ```
